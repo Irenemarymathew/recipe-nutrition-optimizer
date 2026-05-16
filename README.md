@@ -88,7 +88,7 @@ The system prompt was evaluated against the instructor's Prompt Evaluation Assis
 }
 ```
 
-See [PROMPT_EVALUATION.md](/PROMPT_EVALUATION.md) for the full detailed evaluation.
+See [prompt_evaluation.md](prompt_evaluation.md) for the full detailed evaluation.
 
 ---
 
