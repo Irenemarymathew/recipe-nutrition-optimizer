@@ -1,0 +1,41 @@
+# ── API Keys — NEVER commit ───────────────────────────────────
+.env
+
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+
+# ── Virtual Environment ───────────────────────────────────────
+venv/
+.venv/
+
+# ── Gateway — generated/temp files ───────────────────────────
+llm_gatewayV2/gateway_v2.db
+llm_gatewayV2/__pycache__/
+llm_gatewayV2/static/
+llm_gatewayV2/tests/
+llm_gatewayV2/.DS_Store
+
+# ── Project — local data files ────────────────────────────────
+recipe_nutrition_optimizer/analyses.json
+recipe_nutrition_optimizer/__pycache__/
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
+agent_logs.txt
+mcp_agent_logs.txt
+prefab_server.log
+
+# ── OS ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ───────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user

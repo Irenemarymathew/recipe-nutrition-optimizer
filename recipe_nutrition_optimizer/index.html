@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipe Nutrition Optimizer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 32px 16px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: #f0f6fc;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: #8b949e;
+      font-size: 15px;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(56, 139, 253, 0.1);
+      border: 1px solid rgba(56, 139, 253, 0.3);
+      color: #388bfd;
+    }
+
+    /* Input card */
+    .card {
+      background: #161b22;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+    }
+
+    textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      color: #e2e8f0;
+      font-family: inherit;
+      font-size: 13px;
+      resize: vertical;
+      outline: none;
+      min-height: 100px;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      border-color: rgba(56, 139, 253, 0.5);
+    }
+
+    textarea::placeholder {
+      color: #484f58;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      align-items: center;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6e7681;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .field input,
+    .field select {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #e2e8f0;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      width: 120px;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      flex: 1;
+    }
+
+    .btn-primary {
+      background: #238636;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #2ea043;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.05);
+      color: #8b949e;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: #e2e8f0;
+    }
+
+    /* Examples */
+    .examples {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .example-chip {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #8b949e;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .example-chip:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: #e2e8f0;
+    }
+
+    /* Reasoning chain */
+    .chain {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .step {
+      display: flex;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-size: 12px;
+      line-height: 1.55;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .step-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .step-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .step-title {
+      font-weight: 600;
+      color: #f0f6fc;
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .step-content {
+      color: #8b949e;
+    }
+
+    .step-code {
+      font-family: monospace;
+      font-size: 10px;
+      color: #79c0ff;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 5px;
+      padding: 6px 10px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 140px;
+      overflow-y: auto;
+      margin-top: 6px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+
+    .step-thinking {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .step-tool-call {
+      background: rgba(210, 153, 34, 0.06);
+      border-color: rgba(210, 153, 34, 0.15);
+    }
+
+    .step-tool-result {
+      background: rgba(63, 185, 80, 0.05);
+      border-color: rgba(63, 185, 80, 0.12);
+    }
+
+    .step-final {
+      background: rgba(56, 139, 253, 0.08);
+      border-color: rgba(56, 139, 253, 0.2);
+    }
+
+    .step-verdict {
+      background: rgba(137, 87, 229, 0.08);
+      border-color: rgba(137, 87, 229, 0.2);
+    }
+
+    .step-error {
+      background: rgba(248, 81, 73, 0.08);
+      border-color: rgba(248, 81, 73, 0.2);
+    }
+
+    .step-start {
+      background: rgba(63, 185, 80, 0.06);
+      border-color: rgba(63, 185, 80, 0.15);
+    }
+
+    /* Results */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .macro-card {
+      background: #161b22;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .macro-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6e7681;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .macro-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #f0f6fc;
+      margin: 4px 0;
+    }
+
+    .macro-sub {
+      font-size: 11px;
+      color: #484f58;
+    }
+
+    .score-bar-wrap {
+      margin: 8px 0;
+    }
+
+    .score-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .score-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease;
+    }
+
+    .score-good {
+      background: #3fb950;
+    }
+
+    .score-mid {
+      background: #d29922;
+    }
+
+    .score-bad {
+      background: #f85149;
+    }
+
+    .verdict-box {
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .verdict-pass {
+      background: rgba(63, 185, 80, 0.08);
+      border: 1px solid rgba(63, 185, 80, 0.2);
+    }
+
+    .verdict-fail {
+      background: rgba(248, 81, 73, 0.08);
+      border: 1px solid rgba(248, 81, 73, 0.2);
+    }
+
+    .provider-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(137, 87, 229, 0.12);
+      border: 1px solid rgba(137, 87, 229, 0.25);
+      color: #8957e5;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .spin {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="header">
+      <h1>🥗 Recipe Nutrition Optimizer</h1>
+      <p>Paste any recipe — AI fetches real nutrition data and suggests healthier alternatives</p>
+      <div class="badge">Session 5 · llm_gateway · Pydantic · MCP · Multi-model fallback</div>
+    </div>
+
+    <!-- Input -->
+    <div class="card">
+      <h2>Your Recipe</h2>
+      <textarea id="recipeInput"
+        placeholder="e.g. Butter Chicken: 500g chicken, 100g butter, 200ml heavy cream, 100g onion, 50g tomato paste, 10g salt, 30ml oil, 20g sugar"></textarea>
+
+      <div class="examples">
+        <span class="example-chip" onclick="setExample('butter-chicken')">🍗 Butter Chicken</span>
+        <span class="example-chip" onclick="setExample('pasta')">🍝 Creamy Pasta</span>
+        <span class="example-chip" onclick="setExample('dal')">🫘 Dal Tadka</span>
+      </div>
+
+      <div class="row" style="margin-top:16px">
+        <div class="field">
+          <label>Servings</label>
+          <input type="number" id="servings" value="4" min="1" max="20" />
+        </div>
+        <div class="field">
+          <label>Provider</label>
+          <select id="provider">
+            <option value="">Auto (failover)</option>
+            <option value="gemini">Gemini</option>
+            <option value="nvidia">NVIDIA</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="analyzeBtn" onclick="analyze()">🔍 Analyze Recipe</button>
+        <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+      </div>
+    </div>
+
+    <!-- Reasoning Chain -->
+    <div class="card" id="chainCard" style="display:none">
+      <h2>🔗 Agent Reasoning Chain</h2>
+      <div class="chain" id="chain"></div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:none"></div>
+
+  </div>
+
+  <script>
+    const EXAMPLES = {
+      "butter-chicken": "Butter Chicken: 500g chicken, 100g butter, 200ml heavy cream, 100g onion, 50g tomato paste, 10g salt, 30ml oil, 20g sugar, 5g turmeric, 5g garam masala",
+      "pasta": "Creamy Pasta: 300g pasta, 150ml heavy cream, 80g parmesan cheese, 50g butter, 5g salt, 10g black pepper, 100g bacon",
+      "dal": "Dal Tadka: 200g lentils, 30ml oil, 50g onion, 30g tomato, 5g salt, 5g turmeric, 5g cumin, 10g ghee",
+    };
+
+    function setExample(key) {
+      document.getElementById("recipeInput").value = EXAMPLES[key];
+    }
+
+    function clearAll() {
+      document.getElementById("recipeInput").value = "";
+      document.getElementById("chain").innerHTML = "";
+      document.getElementById("chainCard").style.display = "none";
+      document.getElementById("results").style.display = "none";
+      document.getElementById("results").innerHTML = "";
+    }
+
+    function addStep(type, data) {
+      const chain = document.getElementById("chain");
+      document.getElementById("chainCard").style.display = "block";
+      const el = document.createElement("div");
+      el.className = "step";
+
+      switch (type) {
+        case "fallback":
+          el.className += " step-verdict";
+          el.innerHTML = `<div class="step-icon">🔄</div><div class="step-body">
+        <div class="step-title">Model Switched — Automatic Fallback</div>
+        <div class="step-content" style="display:flex;align-items:center;gap:8px">
+          <span class="tag" style="color:#f85149;background:rgba(248,81,73,0.1)">${esc(data.from?.toUpperCase())}</span>
+          <span style="color:#6e7681">→</span>
+          <span class="tag" style="color:#3fb950;background:rgba(63,185,80,0.1)">${esc(data.to?.toUpperCase())}</span>
+          <span style="font-size:11px;color:#6e7681">${esc(data.model?.split("/").pop() || "")}</span>
+        </div>
+      </div>`;
+          break;
+
+        case "start":
+          el.className += " step-start";
+          el.innerHTML = `<div class="step-icon">🎯</div><div class="step-body">
+        <div class="step-title">Recipe Analysis Started</div>
+        <div class="step-content">${esc(data.recipe?.slice(0, 80))}...</div>
+      </div>`;
+          break;
+
+        case "thinking":
+          el.className += " step-thinking";
+          const providerColors = {
+            "gemini": ["#4285f4", "rgba(66,133,244,0.12)"],
+            "nvidia": ["#76b900", "rgba(118,185,0,0.12)"],
+            "nvidia": ["#76b900", "rgba(118,185,0,0.12)"],
+          };
+          const prov = (data.provider || "auto").toLowerCase();
+          const [pc, pbg] = providerColors[prov] || ["#8b949e", "rgba(255,255,255,0.08)"];
+          const modelStr = data.model ? ` · ${data.model.split("/").pop()}` : "";
+          el.innerHTML = `<div class="step-icon"><span class="spin">⚙️</span></div>
+        <div class="step-body">
+          <div class="step-title">Turn ${data.turn} — Calling LLM</div>
+          <div class="step-content" style="display:flex;align-items:center;gap:8px;margin-top:4px">
+            <span class="tag" style="color:${pc};background:${pbg};font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid ${pc}40">
+              ${prov === "auto" ? "🔄 selecting model..." : `🤖 ${prov.toUpperCase()}${modelStr}`}
+            </span>
+            ${data.tokens ? `<span style="font-size:11px;color:#6e7681">${data.tokens} tokens</span>` : ""}
+          </div>
+        </div>`;
+          break;
+
+        case "tool_call":
+          el.className += " step-tool-call";
+          const tagColors = {
+            "fetch_nutrition": ["#d29922", "rgba(210,153,34,0.15)"],
+            "suggest_substitutions": ["#388bfd", "rgba(56,139,253,0.15)"],
+            "save_recipe_analysis": ["#3fb950", "rgba(63,185,80,0.15)"],
+          };
+          const [tc, tbg] = tagColors[data.tool] || ["#8b949e", "rgba(255,255,255,0.08)"];
+          el.innerHTML = `<div class="step-icon">🔧</div><div class="step-body">
+        <div class="step-title">Tool Call → <span class="tag" style="color:${tc};background:${tbg}">${esc(data.tool)}</span>
+        ${data.parallel ? '<span class="tag" style="color:#8957e5;background:rgba(137,87,229,0.1)">parallel</span>' : ''}</div>
+        <div class="step-code">${esc(JSON.stringify(data.args, null, 2))}</div>
+      </div>`;
+          break;
+
+        case "tool_result":
+          el.className += " step-tool-result";
+          let res = data.result;
+          try { res = JSON.stringify(JSON.parse(data.result), null, 2); } catch { }
+          el.innerHTML = `<div class="step-icon">📦</div><div class="step-body">
+        <div class="step-title">Result ← ${esc(data.tool)}</div>
+        <div class="step-code">${esc(res.slice(0, 400))}${res.length > 400 ? "..." : ""}</div>
+      </div>`;
+          break;
+
+        case "final":
+          el.className += " step-final";
+          el.innerHTML = `<div class="step-icon">✅</div><div class="step-body">
+        <div class="step-title">Analysis Complete</div>
+        <div class="step-content" style="white-space:pre-wrap;max-height:300px;overflow-y:auto;line-height:1.6">${esc(data.answer)}</div>
+      </div>`;
+          break;
+
+        case "verdict":
+          el.className += " step-verdict";
+          const pass = data.passed;
+          el.innerHTML = `<div class="step-icon">${pass ? "🏆" : "⚠️"}</div><div class="step-body">
+        <div class="step-title">Verifier Verdict — ${pass ? "PASSED" : "NEEDS REVIEW"}</div>
+        <div class="step-content">
+          Score: ${data.original_score} → ${data.optimized_score} &nbsp;|&nbsp;
+          Culinary valid: ${data.culinary_valid ? "✓" : "✗"} &nbsp;|&nbsp;
+          ${esc(data.reason?.slice(0, 100))}
+        </div>
+      </div>`;
+          break;
+
+        case "error":
+          el.className += " step-error";
+          el.innerHTML = `<div class="step-icon">⚠️</div><div class="step-body">
+        <div class="step-title">Error</div>
+        <div class="step-content">${esc(data.message)}</div>
+      </div>`;
+          break;
+      }
+
+      chain.appendChild(el);
+      chain.scrollTop = chain.scrollHeight;
+    }
+
+    function showResults(data) {
+      const res = document.getElementById("results");
+      const ps = data.per_serving || {};
+      // Prefer verifier's authoritative optimized_score, then estimated_score, then original
+      const og = data.original_score || 0;
+      const op = (data.verdict && data.verdict.optimized_score) || data.estimated_score || data.optimized_score || og;
+      const subs = data.suggestions || [];
+      const verdict = data.verdict || {};
+
+      // Fix: safe number display — show N/A if undefined/null
+      const fmt = (val, digits, unit) => {
+        const n = parseFloat(val);
+        return isNaN(n) ? "N/A" : n.toFixed(digits) + unit;
+      };
+
+      const scoreColor = s => s >= 70 ? "score-good" : s >= 50 ? "score-mid" : "score-bad";
+
+      res.innerHTML = `
+    <div class="card">
+      <h2>📊 Nutrition Per Serving</h2>
+      <div class="results-grid">
+        ${[
+          ["🔥 Calories", fmt(ps.calories, 0, "kcal"), "per serving"],
+          ["💪 Protein", fmt(ps.protein_g, 1, "g"), "per serving"],
+          ["🌾 Carbs", fmt(ps.carbs_g, 1, "g"), "per serving"],
+          ["🧈 Fat", fmt(ps.fat_g, 1, "g"), "per serving"],
+          ["🌿 Fiber", fmt(ps.fiber_g, 1, "g"), "per serving"],
+          ["🧂 Sodium", fmt(ps.sodium_mg, 0, "mg"), "per serving"],
+        ].map(([l, v, s]) => `
+          <div class="macro-card">
+            <div class="macro-label">${l}</div>
+            <div class="macro-value">${v || "N/A"}</div>
+            <div class="macro-sub">${s}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>⭐ Health Score</h2>
+      <div style="display:flex;gap:24px;align-items:center">
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:13px;color:#8b949e">Original</span>
+            <span style="font-size:20px;font-weight:700">${og}/100</span>
+          </div>
+          <div class="score-bar"><div class="score-fill ${scoreColor(og)}" style="width:${og}%"></div></div>
+        </div>
+        <div style="font-size:24px">→</div>
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:13px;color:#8b949e">Optimized</span>
+            <span style="font-size:20px;font-weight:700;color:#3fb950">${op}/100</span>
+          </div>
+          <div class="score-bar"><div class="score-fill ${scoreColor(op)}" style="width:${op}%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    ${subs.filter(s => s.relevant_to_recipe).length > 0 ? `
+    <div class="card">
+      <h2>🔄 Suggested Substitutions</h2>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        ${subs.filter(s => s.relevant_to_recipe).map(s => `
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:14px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <span style="font-weight:600;color:#f0f6fc">${esc(s.replace || s.replace_ingredient || "Ingredient")}</span>
+              <span style="color:#6e7681">→</span>
+              <span style="font-weight:600;color:#3fb950">${esc(s.with || s.substitute || "Alternative")}</span>
+              <span class="tag" style="background:rgba(63,185,80,0.1);color:#3fb950">✓ In recipe</span>
+            </div>
+            <div style="font-size:12px;color:#8b949e">${esc(s.rationale || s.reason || "")}</div>
+            ${s.culinary_check ? `<div style="font-size:11px;color:#6e7681;margin-top:4px">${esc(s.culinary_check)}</div>` : ""}
+          </div>
+        `).join("")}
+      </div>
+    </div>` : ""}
+
+    ${verdict.passed !== undefined ? `
+    <div class="verdict-box ${verdict.passed ? "verdict-pass" : "verdict-fail"}">
+      <div style="font-size:24px">${verdict.passed ? "✅" : "⚠️"}</div>
+      <div>
+        <div style="font-weight:600;color:#f0f6fc;margin-bottom:4px">
+          Verifier: ${verdict.passed ? "PASSED" : "NEEDS REVIEW"}
+        </div>
+        <div style="font-size:12px;color:#8b949e">${esc(verdict.reason || "")}</div>
+        <div style="font-size:11px;color:#6e7681;margin-top:4px">
+          Key improvement: ${esc(verdict.key_improvement || "")}
+        </div>
+      </div>
+    </div>` : ""}
+  `;
+      res.style.display = "block";
+    }
+
+    function esc(str) {
+      return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    async function analyze() {
+      const recipe = document.getElementById("recipeInput").value.trim();
+      const servings = parseInt(document.getElementById("servings").value) || 4;
+      const provider = document.getElementById("provider").value;
+
+      if (!recipe) { alert("Please enter a recipe"); return; }
+
+      document.getElementById("analyzeBtn").disabled = true;
+      document.getElementById("analyzeBtn").textContent = "⏳ Analyzing...";
+      document.getElementById("chain").innerHTML = "";
+      document.getElementById("results").style.display = "none";
+
+      let lastProvider = null;
+
+      addStep("start", { recipe });
+
+      try {
+        const resp = await fetch("/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ recipe, servings, provider: provider || null })
+        });
+
+        if (!resp.ok) throw new Error(`Server error: ${resp.status}`);
+
+        const reader = resp.body.getReader();
+        const dec = new TextDecoder();
+        let buf = "";
+        let resultData = {};
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buf += dec.decode(value, { stream: true });
+
+          const lines = buf.split("\n");
+          buf = lines.pop();
+
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            const ev = JSON.parse(line.slice(6));
+
+            switch (ev.type) {
+              case "thinking":
+                addStep("thinking", ev);
+                // Detect model switch between turns
+                if (ev.provider && lastProvider && ev.provider !== lastProvider) {
+                  addStep("fallback", {
+                    from: lastProvider,
+                    to: ev.provider,
+                    model: ev.model
+                  });
+                }
+                if (ev.provider) lastProvider = ev.provider;
+                break;
+              case "tool_call":
+                addStep("tool_call", ev);
+                break;
+              case "tool_result":
+                addStep("tool_result", ev);
+                // Capture suggest_substitutions result for results panel
+                if (ev.tool === "suggest_substitutions") {
+                  try {
+                    const d = JSON.parse(ev.result);
+                    resultData = { ...resultData, ...d };
+                    console.log("Got substitutions data:", d);
+                  } catch (e) { console.log("Parse error:", e); }
+                }
+                // Also capture fetch_nutrition for macro totals
+                if (ev.tool === "fetch_nutrition") {
+                  try {
+                    const d = JSON.parse(ev.result);
+                    if (!resultData.ingredients) resultData.ingredients = [];
+                    resultData.ingredients.push(d);
+                  } catch { }
+                }
+                break;
+              case "verdict":
+                addStep("verdict", ev);
+                resultData.verdict = ev;
+                // Don't call showResults here — wait for final which carries display_data
+                break;
+              case "final":
+                addStep("final", ev);
+                // Merge display_data first, then render
+                if (ev.display_data) {
+                  resultData = { ...resultData, ...ev.display_data };
+                }
+                showResults(resultData);
+                break;
+              case "error":
+                addStep("error", ev);
+                break;
+            }
+          }
+        }
+      } catch (err) {
+        addStep("error", { message: err.message });
+      } finally {
+        document.getElementById("analyzeBtn").disabled = false;
+        document.getElementById("analyzeBtn").textContent = "🔍 Analyze Recipe";
+      }
+    }
+  </script>
+</body>
+
+</html>
